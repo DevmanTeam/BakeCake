@@ -1,3 +1,14 @@
 from django.contrib import admin
 
-# Register your models here.
+
+from .models import Cake, Order
+
+
+@admin.register(Cake)
+class CakeAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    pass

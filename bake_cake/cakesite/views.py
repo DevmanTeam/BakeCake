@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from .forms import CreateUserForm
+from .forms import CreateUserForm, CakeForm
 from django.contrib import messages
 
 # Create your views here.
@@ -34,3 +34,9 @@ def logoutUser(request):
     logout(request)
     return redirect('login')
 
+
+def make_cake_view(request):
+
+    if request.method == 'GET':
+        cake_form = CakeForm()
+        return render(request, "make_cake.html", {'cake_form': cake_form})

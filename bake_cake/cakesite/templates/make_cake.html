@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %} Make cake page page {% endblock %}
+
+{% block content %}
+
+    <h1 class="m-3">Добавление товара</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6 p-3">
+                <p>Заполните поля ниже для сбора торта:</p>
+                <form action="." method="post" enctype="multipart/form-data">
+                    {{ cake_form.as_p }}
+                    {% csrf_token %}
+                    <p><input type="submit" value="Добавить товар"></p>
+                </form>
+            </div>
+        </div>
+
+{% endblock content %}
