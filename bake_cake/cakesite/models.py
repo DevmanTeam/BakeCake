@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
+from multiselectfield import MultiSelectField
 
 
 class Order(models.Model):
@@ -15,8 +17,9 @@ class Order(models.Model):
                                blank=True,
                                null=True)
     address = models.CharField('Адрес доставки', max_length=100)
-    delivery_date = models.DateTimeField("Дата доставки", blank=True, null=True,
-                                     db_index=True)
+    deliver_to = models.DateTimeField("Дата и время доставки",
+                                         db_index=True,
+                                         default=timezone.now)
     order_status = models.CharField("Статус заказа", max_length=30,
                                     choices=ORDER_STATUS_CHOICES,
                                     default="Необработанный",
@@ -24,6 +27,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='orders',
                              verbose_name='пользователь')
+
     class Meta:
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
@@ -81,18 +85,14 @@ class Cake(models.Model):
                                  choices=CAKE_FORM_CHOICES,
                                  db_index=True
                                  )
-    topping = models.CharField('топпинг',
-                               max_length=50,
-                               choices=CAKE_FORM_CHOICES,
-                               db_index=True
-                               )
-    berries = models.CharField('ягоды',
+    topping = MultiSelectField(choices=TOPPING_CHOICES, max_length=50,)
+    berries = MultiSelectField('ягоды',
                                max_length=50,
                                choices=BERRIES_CHOICES,
                                db_index=True, blank=True,
                                null=True,
                                )
-    decor = models.CharField('декор',
+    decor = MultiSelectField('декор',
                              max_length=50,
                              choices=DECOR_CHOICES,
                              db_index=True, blank=True,
@@ -108,7 +108,7 @@ class Cake(models.Model):
                                  )
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               related_name='cakes',
-                              verbose_name='торт')
+                              verbose_name='заказ')
 
     class Meta:
         verbose_name = 'торт'
