@@ -10,8 +10,8 @@ class CreateUserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
-#
-#
+
+
 class CakeForm(forms.ModelForm):
     TOPPING_CHOICES = [
         ("Без топпинга", "без топпинга"),
@@ -37,10 +37,6 @@ class CakeForm(forms.ModelForm):
         ("Маршмеллоу", "маршмеллоу"),
         ("Марципан", "марципан"),
     ]
-
-    topping = forms.MultipleChoiceField(label='Топпинг', choices=TOPPING_CHOICES)
-    berries = forms.MultipleChoiceField(label='Ягоды', choices=BERRIES_CHOICES)
-    decor = forms.MultipleChoiceField(label='Декор', choices=DECOR_CHOICES)
 
     class Meta:
         model = Cake

@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
@@ -6,6 +8,7 @@ from django.contrib import messages
 from django.db import transaction
 from .models import Cake, Order
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 # Create your views here.
 def registerPage(request):
@@ -47,8 +50,6 @@ def create_cake_order_view(request):
         if order_form.is_valid() and cake_form.is_valid():
             cd_cake = cake_form.cleaned_data
             cd_order = order_form.cleaned_data
-            print(cd_cake)
-            print(cd_order)
             order = Order.objects.create(address=cd_order['address'],
                                          deliver_to=cd_order['deliver_to'],
                                          user=request.user,
@@ -62,6 +63,9 @@ def create_cake_order_view(request):
                                        promocode=cd_cake['promocode'],
                                        order=order,
                                        )
+            cost = get_order_cost(order.id)
+            order.cost = cost
+            order.save()
             return redirect('cakesite:confirm_order', order_id=order.id)
     else:
         cake_form = CakeForm()
@@ -91,4 +95,69 @@ def confirm_order_done(request, order_id):
 
 
 def get_order_cost(order_id):
-    pass
+    cost = 0
+
+    order = Order.objects.get(id=order_id)
+    cake = Cake.objects.get(order=order)
+
+    if cake.levels_count == '1':
+        cost = cost + 400
+    if cake.levels_count == '2':
+        cost = cost + 750
+    if cake.levels_count == '3':
+        cost = cost + 1100
+
+    if cake.cake_form == "Квадрат":
+        cost = cost + 600
+    if cake.cake_form == "Круг":
+        cost = cost + 400
+    if cake.cake_form == "Прямоугольник":
+        cost = cost + 1000
+
+    for topping in cake.topping:
+        if topping == "Без топпинга":
+            cost = cost
+        if topping == "Белый соус":
+            cost = cost + 200
+        if topping == "Карамельный сироп":
+            cost = cost + 180
+        if topping == "Кленовый сироп":
+            cost = cost + 200
+        if topping == "Клубничный сироп":
+            cost = cost + 300
+        if topping == "Черничный сироп":
+            cost = cost + 350
+        if topping == "Молочный шоколад":
+            cost = cost + 200
+
+    for berry in cake.berries:
+        if berry == "Ежевика":
+            cost = cost + 400
+        if berry == "Малина":
+            cost = cost + 300
+        if berry == "Голубика":
+            cost = cost + 450
+        if berry == "Клубника":
+            cost = cost + 500
+
+    for decor in cake.decor:
+        if decor == "Фисташки":
+            cost = cost + 300
+        if decor == "Безе":
+            cost = cost + 400
+        if decor == "Фундук":
+            cost = cost + 350
+        if decor == "Пекан":
+            cost = cost + 300
+        if decor == "Маршмеллоу":
+            cost = cost + 200
+        if decor == "Марципан":
+            cost = cost + 280
+
+    if cake.promocode == "ТОРТ":
+        cost = cost*0.8
+
+    if order.deliver_to <= timezone.now() + timedelta(days=1):
+        cost = cost * 1.2
+
+    return cost

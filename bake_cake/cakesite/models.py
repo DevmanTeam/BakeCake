@@ -27,7 +27,9 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='orders',
                              verbose_name='пользователь')
-
+    cost = models.PositiveSmallIntegerField('Стоимость торта', 
+                                            null=True,
+                                            blank=True)
     class Meta:
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
@@ -85,7 +87,7 @@ class Cake(models.Model):
                                  choices=CAKE_FORM_CHOICES,
                                  db_index=True
                                  )
-    topping = MultiSelectField(choices=TOPPING_CHOICES, max_length=50,)
+    topping = MultiSelectField('топпинг', choices=TOPPING_CHOICES, max_length=50,)
     berries = MultiSelectField('ягоды',
                                max_length=50,
                                choices=BERRIES_CHOICES,
@@ -106,9 +108,10 @@ class Cake(models.Model):
                                  blank=True,
                                  null=True,
                                  )
-    order = models.ForeignKey(Order, on_delete=models.CASCADE,
-                              related_name='cakes',
-                              verbose_name='заказ')
+    order = models.OneToOneField(Order, on_delete=models.CASCADE,
+                                 verbose_name='заказ',
+                                 related_name='cakes',
+                                 )
 
     class Meta:
         verbose_name = 'торт'
