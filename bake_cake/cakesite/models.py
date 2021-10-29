@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from multiselectfield import MultiSelectField
+from django.core.exceptions import ValidationError
 
 
 class Order(models.Model):
@@ -22,7 +23,7 @@ class Order(models.Model):
                                          default=timezone.now)
     order_status = models.CharField("Статус заказа", max_length=30,
                                     choices=ORDER_STATUS_CHOICES,
-                                    default="Необработанный",
+                                    default="Заявка обрабатывается",
                                     db_index=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='orders',
@@ -30,12 +31,18 @@ class Order(models.Model):
     cost = models.PositiveSmallIntegerField('Стоимость торта', 
                                             null=True,
                                             blank=True)
+
     class Meta:
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
 
     def __str__(self):
         return self.address
+
+    # def clean(self):
+    #     if self.deliver_to < timezone.now():
+    #         raise ValidationError('Время доставки не может быть меньше текущего времени')
+    #     return self.deliver_to
 
 
 class Cake(models.Model):

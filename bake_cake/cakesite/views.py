@@ -3,12 +3,16 @@ from datetime import timedelta
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
+from django.urls import reverse
+
 from .forms import CreateUserForm, CakeForm, OrderForm, CommentForm
 from django.contrib import messages
 from django.db import transaction
 from .models import Cake, Order
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.contrib.messages import get_messages
+
 
 # Create your views here.
 def registerPage(request):
@@ -66,6 +70,11 @@ def create_cake_order_view(request):
             cost = get_order_cost(order.id)
             order.cost = cost
             order.save()
+            # request.session = cake
+            # print(request.session.levels_count)
+            # return redirect(reverse('cakesite:confirm_order',
+            #                         kwargs={'order_id': order.id,'order': order,
+            #                                 'cake': cake}))
             return redirect('cakesite:confirm_order', order_id=order.id)
     else:
         cake_form = CakeForm()
@@ -79,6 +88,8 @@ def confirm_order_view(request, order_id):
     if request.method == 'POST':
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
+            storage = messages.get_messages(request)
+            print(storage)
             cd_comment = comment_form.cleaned_data
             order = Order.objects.get(id=order_id)
             order.comment = cd_comment['comment']
@@ -86,7 +97,13 @@ def confirm_order_view(request, order_id):
             return redirect('cakesite:confirm_order_done', order_id=order_id)
     else:
         comment_form = CommentForm()
-        return render(request, "confirm_order.html", {'comment_form': comment_form})
+        order = Order.objects.get(id=order_id)
+        cake = Cake.objects.get(order=order)
+        return render(request,
+                      "confirm_order.html",
+                      {'comment_form': comment_form,
+                       'order': order,
+                       'cake': cake})
 
 
 @login_required
@@ -156,6 +173,9 @@ def get_order_cost(order_id):
 
     if cake.promocode == "ТОРТ":
         cost = cost*0.8
+
+    if cake.inscription:
+        cost = cost +500
 
     if order.deliver_to <= timezone.now() + timedelta(days=1):
         cost = cost * 1.2
