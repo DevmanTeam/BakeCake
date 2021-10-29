@@ -14,18 +14,23 @@ class CreateUserForm(UserCreationForm):
 
 
 class CakeForm(forms.ModelForm):
+    inscription = forms.DateTimeField(label='Надпись',
+                                      required=False,
+                                      help_text='Мы можем разместить на торте любую надпись, например: «С днем рождения!»')
 
     class Meta:
         model = Cake
         fields = ('levels_count', 'cake_form', 'topping', 'berries',
-                  'decor', 'inscription', 'promocode')
+                  'decor', 'promocode')
 
 
 class OrderForm(forms.ModelForm):
+    # deliver_to = forms.DateTimeField(label='Время и дата доставки',
+    #                                  initial=timezone.now())
 
     class Meta:
         model = Order
-        fields = ('address', 'deliver_to',)
+        fields = ('address', 'deliver_to')
 
     def clean_deliver_to(self):
         deliver_to = self.cleaned_data['deliver_to']

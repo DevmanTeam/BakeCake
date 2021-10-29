@@ -39,11 +39,6 @@ class Order(models.Model):
     def __str__(self):
         return self.address
 
-    # def clean(self):
-    #     if self.deliver_to < timezone.now():
-    #         raise ValidationError('Время доставки не может быть меньше текущего времени')
-    #     return self.deliver_to
-
 
 class Cake(models.Model):
 
