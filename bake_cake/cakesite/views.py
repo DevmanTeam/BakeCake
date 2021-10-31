@@ -4,45 +4,53 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
+from django.http import HttpResponse
+from django.contrib.messages import get_messages
 
-from .forms import CreateUserForm, CakeForm, OrderForm, CommentForm
+from .forms import CreateUserForm, CakeForm, OrderForm, CommentForm, LoginForm
 from django.contrib import messages
 from django.db import transaction
 from .models import Cake, Order
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.contrib.messages import get_messages
 
 
-# Create your views here.
-def registerPage(request):
-    form = CreateUserForm()
+@transaction.atomic
+def register(request):
 
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()
-    context = {'form': form}
-    return render(request, 'registration/register.html', context)
+            new_user = form.save()
+            return render(request, 'registration/register_done.html', {'new_user': new_user})
+    else:
+        form = CreateUserForm()
+    return render(request, 'registration/register.html', {'form': form})
 
 
-def loginPage(request):
+def user_login(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user:
-            login(request, username)
-            redirect('')
-        messages.info(request, 'user name is incorrect')
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = authenticate(username=cd['username'], password=cd['password'])
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
 
-    context = {}
-    return render(request, 'registration/login.html', context)    
+                    return redirect('cakesite:create_order')
+                else:
+                    return HttpResponse('Disabled account')
+            else:
+                return HttpResponse('Invalid login or password')
+    else:
+        form = LoginForm()
+    return render(request, 'registration/login.html', {'form': form})
 
 
-def logoutUser(request):
+def logout_user(request):
     logout(request)
-    return redirect('login')
+    return redirect('cakesite:login')
 
 
 @transaction.atomic
@@ -70,15 +78,11 @@ def create_cake_order_view(request):
             cost = get_order_cost(order.id)
             order.cost = cost
             order.save()
-            # request.session = cake
-            # print(request.session.levels_count)
-            # return redirect(reverse('cakesite:confirm_order',
-            #                         kwargs={'order_id': order.id,'order': order,
-            #                                 'cake': cake}))
             return redirect('cakesite:confirm_order', order_id=order.id)
     else:
         cake_form = CakeForm()
-        order_form = OrderForm()
+        order_form = OrderForm(initial={'address': request.user.address})
+        # print(request.user.address)
         return render(request, "create_order.html", {'cake_form': cake_form,
                                                      'order_form': order_form})
 

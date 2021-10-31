@@ -3,14 +3,42 @@ from django.contrib.auth.models import User
 from django import forms
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 
-from .models import Cake, Order
+from .models import Cake, Order, CustomUser
 
 
 class CreateUserForm(UserCreationForm):
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
+                                 message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+    phone = forms.CharField(validators=[phone_regex], max_length=12)
+    username = forms.CharField(max_length=20)
+    communication_contact = forms.CharField(label='Link to your social network',
+                                            max_length=50,
+                                            required=False)
+    address = forms.CharField(label='Delivery address',
+                              max_length=50)
+    consent_to_processing_db = forms.BooleanField(label='Consent to the processing of personal data',
+                                                  help_text='Для просмотра соглашения перейдите по ссылке: https://github.com/DevmanTeam/BakeCake/raw/master/bake_cake/soglasie%20na%20obrabotku%20PD.pdf ')
+
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        model = CustomUser
+        fields = ['username',
+                  'password1',
+                  'password2',
+                  'phone',
+                  'first_name',
+                  'last_name',
+                  'email',
+                  'communication_contact',
+                  'address',
+                  'consent_to_processing_db'
+                  ]
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(label='Логин')
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
 
 
 class CakeForm(forms.ModelForm):
@@ -25,8 +53,6 @@ class CakeForm(forms.ModelForm):
 
 
 class OrderForm(forms.ModelForm):
-    # deliver_to = forms.DateTimeField(label='Время и дата доставки',
-    #                                  initial=timezone.now())
 
     class Meta:
         model = Order

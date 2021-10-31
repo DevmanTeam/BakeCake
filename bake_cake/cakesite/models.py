@@ -6,6 +6,24 @@ from django.contrib.auth.models import AbstractUser
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+class CustomUser(AbstractUser):
+    phone = PhoneNumberField('мобильный телефон')
+    communication_contact = models.CharField('ссылка на социальную сеть',
+                                             blank=True,
+                                             null=True,
+                                             max_length=100)
+    address = models.CharField('Адрес доставки',
+                               max_length=100,
+                               null=True,
+                               blank=True)
+
+    consent_to_processing_db = models.BooleanField('согласие на обработку персональных данных', default=True)
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
+
 class Order(models.Model):
     ORDER_STATUS_CHOICES = [
         ("Заявка обрабатывается", "заявка обрабатывается"),
@@ -26,7 +44,7 @@ class Order(models.Model):
                                     choices=ORDER_STATUS_CHOICES,
                                     default="Заявка обрабатывается",
                                     db_index=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
                              related_name='orders',
                              verbose_name='пользователь')
     cost = models.PositiveSmallIntegerField('Стоимость торта', 
@@ -120,19 +138,3 @@ class Cake(models.Model):
         verbose_name = 'торт'
         verbose_name_plural = 'торты'
 
-
-class CustomUser(AbstractUser):
-    phone = PhoneNumberField('мобильный телефон')
-    communication_contact = models.CharField('ссылка на социальную сеть',
-                                             blank=True,
-                                             null=True,
-                                             max_length=100)
-    address = models.CharField('Адрес доставки',
-                               max_length=100,
-                               null=True,
-                               blank=True)
-    consent_to_processing_db = models.BooleanField('согласие на обработку персональных данных')
-
-    class Meta:
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
