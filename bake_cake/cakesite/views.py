@@ -38,7 +38,7 @@ def user_login(request):
                 if user.is_active:
                     login(request, user)
 
-                    return redirect('cakesite:create_order')
+                    return redirect('cakesite:private_office')
                 else:
                     return HttpResponse('Disabled account')
             else:
@@ -82,9 +82,20 @@ def create_cake_order_view(request):
     else:
         cake_form = CakeForm()
         order_form = OrderForm(initial={'address': request.user.address})
-        # print(request.user.address)
         return render(request, "create_order.html", {'cake_form': cake_form,
                                                      'order_form': order_form})
+
+
+@login_required
+def get_private_office(request):
+    orders = Order.objects.all()
+    return render(request, "private_office.html", {'orders': orders})
+
+
+@login_required
+def cancel_order(request, order_id):
+    Order.objects.get(id=order_id).delete()
+    return render(request, "order_cancellation.html")
 
 
 @login_required

@@ -8,6 +8,7 @@
                     {{ form.as_p }}
                     {% csrf_token %}
                     <p><input type="submit" value="Войти"></p>
+            <p>Если у вас еще нет учетной записи, вы можете <a href="{% url 'cakesite:register' %}">зарегистрироваться</a> </p>
                 </form>
         </div>
     </div>
