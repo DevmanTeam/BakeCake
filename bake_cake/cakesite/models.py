@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from multiselectfield import MultiSelectField
-from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractUser
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Order(models.Model):
@@ -120,3 +121,18 @@ class Cake(models.Model):
         verbose_name_plural = 'торты'
 
 
+class CustomUser(AbstractUser):
+    phone = PhoneNumberField('мобильный телефон')
+    communication_contact = models.CharField('ссылка на социальную сеть',
+                                             blank=True,
+                                             null=True,
+                                             max_length=100)
+    address = models.CharField('Адрес доставки',
+                               max_length=100,
+                               null=True,
+                               blank=True)
+    consent_to_processing_db = models.BooleanField('согласие на обработку персональных данных')
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'

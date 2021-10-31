@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+from environs import Env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,26 +21,30 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'id0j+)f_27wm=hy4@5b@z=ou#&c*cqs%9!dvn&#9=^u1873o2a'
+env = Env()
+env.read_env()
+
+SECRET_KEY = env('SECRET_KEY', 'id0j+)f_27wm=hy4@5b@z=ou#&c*cqs%9!dvn&#9=^u1873o2a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'cakesite',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cakesite',
     'multiselectfield',
     'import_export',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -123,3 +128,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
+AUTH_USER_MODEL = 'cakesite.CustomUser'
