@@ -27,7 +27,7 @@ env.read_env()
 SECRET_KEY = env('SECRET_KEY', 'id0j+)f_27wm=hy4@5b@z=ou#&c*cqs%9!dvn&#9=^u1873o2a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', True)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 
@@ -130,3 +130,6 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 AUTH_USER_MODEL = 'cakesite.CustomUser'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
