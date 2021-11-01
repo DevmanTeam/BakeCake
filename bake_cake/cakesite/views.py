@@ -184,11 +184,11 @@ def get_order_cost(order_id):
     for decor in cake.decor:
         cost = cost + decors[decor]
 
-    if cake.promocode == "ТОРТ":
-        cost = cost*0.8
-
     if cake.inscription:
         cost = cost + 500
+
+    if cake.promocode == "ТОРТ":
+        cost = cost * 0.8
 
     if order.deliver_to <= timezone.now() + timedelta(days=1):
         cost = cost * 1.2
