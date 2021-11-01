@@ -29,7 +29,7 @@ SECRET_KEY = env('SECRET_KEY', 'id0j+)f_27wm=hy4@5b@z=ou#&c*cqs%9!dvn&#9=^u1873o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', True)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost', 'fiskless1.pythonanywhere.com'])
 
 
 # Application definition
