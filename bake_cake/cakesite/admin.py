@@ -43,6 +43,22 @@ class OrderResource(resources.ModelResource):
 
 class CakeInline(admin.TabularInline):
     model = Cake
+    list_display = ['levels_count',
+                    'cake_form',
+                    'topping',
+                    'berries',
+                    'decor',
+                    'inscription',
+                    'promocode',
+                    ]
+    readonly_fields = ['levels_count',
+                    'cake_form',
+                    'topping',
+                    'berries',
+                    'decor',
+                    'inscription',
+                    'promocode',
+                    ]
 
 
 @admin.register(Order)

@@ -1,11 +1,9 @@
 from datetime import timedelta
 
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from django.urls import reverse
+
 from django.http import HttpResponse
-from django.contrib.messages import get_messages
 
 from .forms import CreateUserForm, CakeForm, OrderForm, CommentForm, LoginForm
 from django.contrib import messages
@@ -13,6 +11,7 @@ from django.db import transaction
 from .models import Cake, Order
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
 @transaction.atomic
@@ -82,8 +81,8 @@ def create_cake_order_view(request):
     else:
         cake_form = CakeForm()
         order_form = OrderForm(initial={'address': request.user.address})
-        return render(request, "create_order.html", {'cake_form': cake_form,
-                                                     'order_form': order_form})
+    return render(request, "create_order.html", {'cake_form': cake_form,
+                                                 'order_form': order_form})
 
 
 @login_required
@@ -98,13 +97,13 @@ def cancel_order(request, order_id):
     return render(request, "order_cancellation.html")
 
 
+@transaction.atomic
 @login_required
 def confirm_order_view(request, order_id):
     if request.method == 'POST':
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
             storage = messages.get_messages(request)
-            print(storage)
             cd_comment = comment_form.cleaned_data
             order = Order.objects.get(id=order_id)
             order.comment = cd_comment['comment']

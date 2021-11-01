@@ -1,9 +1,9 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django import forms
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+
 
 from .models import Cake, Order, CustomUser
 
@@ -59,9 +59,8 @@ class OrderForm(forms.ModelForm):
 
     def clean_deliver_to(self):
         deliver_to = self.cleaned_data['deliver_to']
-
         if deliver_to < timezone.now():
-            raise ValidationError('Время доставки не может быть меньше текущего времени')
+            return ValidationError('Время доставки не может быть меньше текущего времени')
         return deliver_to
 
 
