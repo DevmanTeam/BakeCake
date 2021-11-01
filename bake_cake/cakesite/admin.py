@@ -41,12 +41,13 @@ class OrderResource(resources.ModelResource):
                   ]
 
 
-@admin.register(Cake)
-class CakeAdmin(admin.ModelAdmin):
-    pass
+class CakeInline(admin.TabularInline):
+    model = Cake
 
 
 @admin.register(Order)
 class OrderAdmin(ImportExportModelAdmin):
     resource_class = OrderResource
     readonly_fields = ('cost',)
+    inlines = [CakeInline]
+    list_display = ['address', 'deliver_to', 'order_status', 'cost']

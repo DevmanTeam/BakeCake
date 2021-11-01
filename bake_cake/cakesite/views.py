@@ -132,59 +132,58 @@ def get_order_cost(order_id):
     order = Order.objects.get(id=order_id)
     cake = Cake.objects.get(order=order)
 
-    if cake.levels_count == '1':
-        cost = cost + 400
-    if cake.levels_count == '2':
-        cost = cost + 750
-    if cake.levels_count == '3':
-        cost = cost + 1100
+    levels_count = {
+        '1': 400,
+        '2': 750,
+        '3': 1100,
+    }
 
-    if cake.cake_form == "Квадрат":
-        cost = cost + 600
-    if cake.cake_form == "Круг":
-        cost = cost + 400
-    if cake.cake_form == "Прямоугольник":
-        cost = cost + 1000
+    cost = cost + levels_count[cake.levels_count]
+
+    cake_form = {
+        'Квадрат': 600,
+        'Круг': 400,
+        'Прямоугольник': 1000,
+    }
+
+    cost = cost + cake_form[cake.cake_form]
+
+    toppings = {
+        'Без топпинга': 0,
+        'Белый соус': 200,
+        'Карамельный сироп': 180,
+        'Кленовый сироп': 200,
+        'Клубничный сироп': 300,
+        'Черничный сироп': 350,
+        'Молочный шоколад': 200,
+    }
 
     for topping in cake.topping:
-        if topping == "Без топпинга":
-            cost = cost
-        if topping == "Белый соус":
-            cost = cost + 200
-        if topping == "Карамельный сироп":
-            cost = cost + 180
-        if topping == "Кленовый сироп":
-            cost = cost + 200
-        if topping == "Клубничный сироп":
-            cost = cost + 300
-        if topping == "Черничный сироп":
-            cost = cost + 350
-        if topping == "Молочный шоколад":
-            cost = cost + 200
+        cost = cost + toppings[topping]
+
+    berries = {
+        'Ежевика': 400,
+        'Малина': 300,
+        'Голубика': 450,
+        'Клубника': 500,
+
+    }
 
     for berry in cake.berries:
-        if berry == "Ежевика":
-            cost = cost + 400
-        if berry == "Малина":
-            cost = cost + 300
-        if berry == "Голубика":
-            cost = cost + 450
-        if berry == "Клубника":
-            cost = cost + 500
+        cost = cost + berries[berry]
+
+    decors = {
+        'Фисташки': 300,
+        'Безе': 400,
+        'Фундук': 350,
+        'Пекан': 300,
+        'Маршмеллоу': 200,
+        'Марципан': 280,
+
+    }
 
     for decor in cake.decor:
-        if decor == "Фисташки":
-            cost = cost + 300
-        if decor == "Безе":
-            cost = cost + 400
-        if decor == "Фундук":
-            cost = cost + 350
-        if decor == "Пекан":
-            cost = cost + 300
-        if decor == "Маршмеллоу":
-            cost = cost + 200
-        if decor == "Марципан":
-            cost = cost + 280
+        cost = cost + decors[decor]
 
     if cake.promocode == "ТОРТ":
         cost = cost*0.8

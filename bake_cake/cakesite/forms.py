@@ -18,8 +18,7 @@ class CreateUserForm(UserCreationForm):
                                             required=False)
     address = forms.CharField(label='Delivery address',
                               max_length=50)
-    consent_to_processing_db = forms.BooleanField(label='Consent to the processing of personal data',
-                                                  help_text='Для просмотра соглашения перейдите по ссылке: https://github.com/DevmanTeam/BakeCake/raw/master/bake_cake/soglasie%20na%20obrabotku%20PD.pdf ')
+    consent_to_processing_db = forms.BooleanField(label='Consent to the processing of personal data')
 
     class Meta:
         model = CustomUser
