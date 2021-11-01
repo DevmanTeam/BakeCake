@@ -41,7 +41,7 @@ class LoginForm(forms.Form):
 
 
 class CakeForm(forms.ModelForm):
-    inscription = forms.DateTimeField(label='Надпись',
+    inscription = forms.CharField(label='Надпись',
                                       required=False,
                                       help_text='Мы можем разместить на торте любую надпись, например: «С днем рождения!»')
 
