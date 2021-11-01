@@ -138,3 +138,6 @@ class Cake(models.Model):
         verbose_name = 'торт'
         verbose_name_plural = 'торты'
 
+    def __str__(self):
+        return f'Торт для {self.order.user} по адресу {self.order.address}'
+
