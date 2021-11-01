@@ -87,7 +87,7 @@ def create_cake_order_view(request):
 
 @login_required
 def get_private_office(request):
-    orders = Order.objects.all()
+    orders = Order.objects.filter(user=request.user)
     return render(request, "private_office.html", {'orders': orders})
 
 
@@ -188,7 +188,7 @@ def get_order_cost(order_id):
         cost = cost*0.8
 
     if cake.inscription:
-        cost = cost +500
+        cost = cost + 500
 
     if order.deliver_to <= timezone.now() + timedelta(days=1):
         cost = cost * 1.2
